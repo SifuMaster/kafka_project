@@ -16,9 +16,9 @@ start_day = None
 try:
     with open("./start_day.txt", "r") as file:
         start_day = file.read().strip()
-        print(start_day)
+        # print(start_day)
         start_day = datetime.strptime(start_day, "%Y-%m-%d %H:%M:%S").date()
-        print(start_day)
+        # print(start_day)
 except FileNotFoundError:
     pass
     
