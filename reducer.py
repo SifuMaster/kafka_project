@@ -95,7 +95,7 @@ while running:
 
 
 
-    # If more than one reducers i should lock here!
+    # If more than one reducers, I should lock here!
 
     # Get results from bucket until now    
     response = client.get_object("quadrants.results", "Q1")
