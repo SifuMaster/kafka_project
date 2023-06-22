@@ -59,14 +59,14 @@ with open('./dataset/Citi_Bike_trip_data.csv','r') as read_obj:
             day = datetime_obj.day
             
             selected_columns = {
-                'column1': row['start station latitude'],
-                'column2': row['start station longitude'],
+                'start_lat': row['start station latitude'],
+                'start_long': row['start station longitude'],
             }
             
             ack = producer.send(topicname, json.dumps(selected_columns).encode('utf-8'))
             metadata = ack.get()
             # print(metadata.topic, metadata.partition)
-            print(datetime_str)
+            # print(datetime_str)
         else:
             with open("./start_day.txt", "w") as file:
                 file.write(f"{datetime_str}")
