@@ -61,6 +61,8 @@ with open('./dataset/Citi_Bike_trip_data.csv','r') as read_obj:
             selected_columns = {
                 'start_time': row['starttime'],
                 'station_id': row['start station id'],
+                'station_lat': row['start station latitude'],
+                'station_long': row['start station longitude']
             }
             
             ack = producer.send(topicname, json.dumps(selected_columns).encode('utf-8'))

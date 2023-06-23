@@ -45,15 +45,18 @@ while running:
             
             start_time = datetime.strptime(json.loads(msg.value.decode('utf-8'))["start_time"], '%Y-%m-%d %H:%M:%S').time()
             station_id = json.loads(msg.value.decode('utf-8'))["station_id"]
+            station_lat = float(json.loads(msg.value.decode('utf-8'))["station_lat"])
+            station_long = float(json.loads(msg.value.decode('utf-8'))["station_long"])
+
             
             if start_time >= time(12, 0, 0) and start_time < time (18, 0, 0):
-                msg_to_send = {'T1': station_id}
-            elif start_time >= time(18, 0, 0) and start_time < time (0, 0, 0):
-                msg_to_send = {'T2': station_id}
+                msg_to_send = {'T1': station_id, 'lat': station_lat, 'long': station_long}
+            elif start_time >= time(18, 0, 0) and start_time <= time (23, 59, 59):
+                msg_to_send = {'T2': station_id, 'lat': station_lat, 'long': station_long}
             elif start_time >= time(0, 0, 0) and start_time < time (6, 0, 0):
-                msg_to_send = {'T3': station_id}
+                msg_to_send = {'T3': station_id, 'lat': station_lat, 'long': station_long}
             else:
-                msg_to_send = {'T4': station_id}
+                msg_to_send = {'T4': station_id, 'lat': station_lat, 'long': station_long}
             producer.send("for_reducers_2", json.dumps(msg_to_send).encode('utf-8'))
         print(msg_to_send)
 

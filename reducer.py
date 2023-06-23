@@ -1,8 +1,23 @@
-from kafka import KafkaConsumer, KafkaProducer
+from kafka import KafkaConsumer
 import json
-from datetime import datetime, time
 from minio import Minio
 import io
+from collections import Counter
+import folium
+import folium
+import time
+from selenium import webdriver
+from PIL import Image
+import os
+
+
+
+def find_top_n(n, d):
+    counter = Counter(d)
+    result = dict(counter.most_common(n))
+    # return list(result)
+    return result
+ 
 
 # prepare minio client - everything is default
 
@@ -47,8 +62,11 @@ if not found:
     client.put_object("time.results",'T3', data_stream, len(data))
     data_stream = io.BytesIO(data)    
     client.put_object("time.results",'T4', data_stream, len(data))
+    data_stream = io.BytesIO(data)    
+    client.put_object("time.results",'regiments', data_stream, len(data))
 
-    print(data)
+
+
 
 # Prepare consumer
 topics = ["for_reducers_1", "for_reducers_2"]
@@ -80,6 +98,13 @@ while running:
         "T4": {}
     }
 
+    # Station regiments needed for the map
+    response = client.get_object("time.results", "regiments")
+    data = response.data
+    R = json.loads(data.decode('utf-8'))
+        
+
+
     for msg in consumer:
         if msg.topic == "for_reducers_1":
             msg_dict= json.loads(msg.value.decode('utf-8'))
@@ -88,10 +113,20 @@ while running:
         elif msg.topic == "for_reducers_2":
             msg_dict= json.loads(msg.value.decode('utf-8'))
             key = list(msg_dict.keys())[0]
+            print(key)
             if str(msg_dict[key]) in T[key]:
                 T[key][str(msg_dict[key])] += 1
             else:
-                T[key][str(msg_dict[key])] = 1 
+                T[key][str(msg_dict[key])] = 1
+                if str(msg_dict[key]) not in R:
+                    R[str(msg_dict[key])] = (msg_dict['lat'], msg_dict['long'])
+
+    # Update stations regiments
+    R_json = json.dumps(R)
+    data = str(R_json).encode('utf-8')
+    data_stream = io.BytesIO(data)
+    client.put_object("time.results", 'regiments', data_stream, len(data))
+
 
 
 
@@ -119,6 +154,7 @@ while running:
     data = response.data
     T1_from_bucket = json.loads(data.decode('utf-8'))
 
+
     response = client.get_object("time.results", "T2")
     data = response.data
     T2_from_bucket = json.loads(data.decode('utf-8'))
@@ -133,24 +169,76 @@ while running:
 
 
     # Update results in buckets
+
+    # 1
     Q["Q1"] += Q1_from_bucket
     Q["Q2"] += Q2_from_bucket
     Q["Q3"] += Q3_from_bucket
     Q["Q4"] += Q4_from_bucket
 
+
     for i in range(1,5):
-        # 1
         data = str(Q["Q"+str(i)]).encode('utf-8')
         data_stream = io.BytesIO(data)
         client.put_object("quadrants.results",'Q'+str(i), data_stream, len(data))
-        print(data)
-       
-        # 2
 
+
+    # 2
+    for (T_from_bucket, T_new, i) in [(T1_from_bucket, T["T1"], 1) , (T2_from_bucket, T["T2"], 2), 
+                                   (T3_from_bucket, T["T3"], 3), (T4_from_bucket, T["T4"], 4)]:
+        for station in list(T_new.keys()):
+            if station in T_from_bucket:
+                T_from_bucket[station] += T_new[station]
+            else:
+                T_from_bucket[station] = T_new[station]
+        
+        json_string = json.dumps(T_from_bucket)
+        data = json_string.encode('utf-8')
+        data_stream = io.BytesIO(data)    
+        client.put_object("time.results",'T'+str(i), data_stream, len(data))
+        T['T'+str(i)] = find_top_n(10, T_from_bucket)
+
+
+    # Draw the map
+
+    # Create a map object
+    m = folium.Map(location=[40.7128, -74.0060], zoom_start=12)  # New York coordinates
+
+    # folium.Marker()
+
+    response = client.get_object("time.results", "regiments")
+    data = response.data
+    R = json.loads(data.decode('utf-8'))
+
+    for (i, c) in [(1,'red'), (2,'blue'), (3,'green'), (4,'black')]:
+        for s in T['T'+str(i)]:
+            print(s)
+            lat = R[s][0]
+            long =  R[s][1]
+            folium.Marker([lat, long], popup=s, icon=folium.Icon(color=c, icon=sh)).add_to(m)
+
+
+    # # Create a temporary HTML file
+    html_file = 'map.html'
+    m.save(html_file)
+    path = os.path.abspath("map.html")
+
+
+    # Here Chrome  will be used
+    driver = webdriver.Firefox()
+    
+    # URL of website
+    url = f'file://{path}'
+    # Opening the website
+    driver.get(url)
+
+    time.sleep(5)  # Wait for the map to load
 
     
-
-
-
-
-
+    driver.save_screenshot("image.png")
+    
+    # Loading the image
+    image = Image.open("image.png")
+    
+    # Showing the image
+    image.show()
