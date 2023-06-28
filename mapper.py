@@ -18,13 +18,16 @@ consumer = KafkaConsumer(*topics, **configs)
 # Prepare producer
 producer = KafkaProducer()
 
+i = 0
 # Start polling
 running = True
 while running:
     
-    while not consumer.poll(timeout_ms=1000):{} # wait for messages
+    # while not consumer.poll():{} # wait for messages
 
     for msg in consumer:
+        i += 1
+        print(i)
         if msg.topic == "for_mappers_1":
             
             start_lat = float(json.loads(msg.value.decode('utf-8'))["start_lat"])
@@ -39,7 +42,7 @@ while running:
             else:
                 msg_to_send = {'Q4': 1}
             producer.send("for_reducers_1", json.dumps(msg_to_send).encode('utf-8'))
-            print(msg_to_send)
+            # print(msg_to_send)
 
         elif msg.topic == "for_mappers_2":
             
@@ -58,6 +61,6 @@ while running:
             else:
                 msg_to_send = {'T4': station_id, 'lat': station_lat, 'long': station_long}
             producer.send("for_reducers_2", json.dumps(msg_to_send).encode('utf-8'))
-        print(msg_to_send)
+        # print(msg_to_send)
 
 
