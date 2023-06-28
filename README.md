@@ -19,4 +19,4 @@ Create the needed Kafka Topics, exctract and rename the dataset
 
 ## map-reduce 1
 
-[![N|Solid](./images/result_1.png)]
+![N|Solid](./images/result_1.png)
