@@ -1,6 +1,5 @@
-from kafka import KafkaAdminClient, KafkaConsumer, KafkaProducer
+from kafka import KafkaProducer
 import json
-from json import loads
 from csv import DictReader
 from datetime import datetime, timedelta
 
