@@ -12,7 +12,7 @@ counter = 0
 
 # Read the last saved start_day from the file
 try:
-    with open("./start_day.txt", "r") as file:        
+    with open("./start_day_1.txt", "r") as file:        
         start_day = file.read().strip()
         start_day = datetime.strptime(start_day, "%Y-%m-%d %H:%M:%S").date()
 except FileNotFoundError:
@@ -35,7 +35,7 @@ with open('./dataset/Citi_Bike_trip_data.csv','r') as read_obj:
         }
         producer.send(topicname, json.dumps(selected_columns).encode('utf-8'))
         counter += 1
-        with open("./start_day.txt", "w") as file:
+        with open("./start_day_1.txt", "w") as file:
             file.write(f"{datetime_str}")
 
 
@@ -56,10 +56,10 @@ with open('./dataset/Citi_Bike_trip_data.csv','r') as read_obj:
             
             producer.send(topicname, json.dumps(selected_columns).encode('utf-8'))
             counter += 1
-            with open("./start_day.txt", "w") as file:
+            with open("./start_day_1.txt", "w") as file:
                 file.write(f"{datetime_str}")
         else:
-            with open("./start_day.txt", "w") as file:
+            with open("./start_day_1.txt", "w") as file:
                 file.write(f"{datetime_str}")
             if datetime_obj.date() >= start_day + timedelta(days=10):
                 producer.flush()
