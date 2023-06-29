@@ -10,7 +10,7 @@ https://linuxhint.com/installing_minio_ubuntu/
 
 # Installation
 
-Create the needed Kafka Topics, exctract and rename the dataset
+Create the needed Kafka Topics, exctract and rename the dataset by simply running the given script
 ```sh
 ./preparation.sh
 ```
