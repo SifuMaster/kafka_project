@@ -8,7 +8,7 @@ topicname = 'for_mappers_2'
 producer = KafkaProducer(bootstrap_servers = bootstrap_servers)
 producer = KafkaProducer()
 
-counter = 0
+# counter = 0
 
 # Read the last saved start_day from the file
 try:
@@ -36,7 +36,7 @@ with open('./dataset/Citi_Bike_trip_data.csv','r') as read_obj:
                 'station_long': first_row['start station longitude']
         }
         producer.send(topicname, json.dumps(selected_columns).encode('utf-8'))
-        counter += 1
+        # counter += 1
         with open("./start_day_2.txt", "w") as file:
             file.write(f"{datetime_str}")
 
@@ -59,7 +59,7 @@ with open('./dataset/Citi_Bike_trip_data.csv','r') as read_obj:
             }
             
             producer.send(topicname, json.dumps(selected_columns).encode('utf-8'))
-            counter += 1
+            # counter += 1
             with open("./start_day_2.txt", "w") as file:
                 file.write(f"{datetime_str}")
         else:
@@ -68,5 +68,5 @@ with open('./dataset/Citi_Bike_trip_data.csv','r') as read_obj:
             if datetime_obj.date() >= start_day + timedelta(days=10):
                 producer.flush()
                 break
-        print(counter)
+        # print(counter)
         

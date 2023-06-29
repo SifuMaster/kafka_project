@@ -18,7 +18,7 @@ consumer = KafkaConsumer(*topics, **configs)
 # Prepare producer
 producer = KafkaProducer()
 
-i = 0
+# i = 0
 # Start polling
 running = True
 while running:
@@ -26,8 +26,8 @@ while running:
     # while not consumer.poll():{} # wait for messages
 
     for msg in consumer:
-        i += 1
-        print(i)
+        # i += 1
+        # print(i)
         if msg.topic == "for_mappers_1":
             
             start_lat = float(json.loads(msg.value.decode('utf-8'))["start_lat"])
