@@ -19,8 +19,12 @@ Create the needed Kafka Topics, exctract and rename the dataset
 
 ## Question 1
 
+Q1 - Q4 are the quadrants around the given center and the value next to them is the number of trips starting from it
+
 ![N|Solid](./images/result_1.png)
 
 ## Question 2
+
+T1 - T4 are the four given intervals and the values correspodin to each are pairs of "station ids" and "number of trips" starting from the stations in the time interval. The results are sorted in descending order.
 
 ![N|Solid](./images/result_2.png)
