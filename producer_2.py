@@ -2,19 +2,33 @@ from kafka import KafkaProducer
 import json
 from csv import DictReader
 from datetime import datetime, timedelta
+import os
 
 bootstrap_servers = ['localhost:9092']
 topicname = 'for_mappers_2'
 producer = KafkaProducer(bootstrap_servers = bootstrap_servers)
 producer = KafkaProducer()
 
+backup_file = "./start_day_2_backup.txt"
+
 # counter = 0
 
 # Read the last saved start_day from the file
 try:
-    with open("./start_day_2.txt", "r") as file:        
-        start_day = file.read().strip()
-        start_day = datetime.strptime(start_day, "%Y-%m-%d %H:%M:%S").date()
+    with open("./start_day_2.txt", "r") as file:
+        if os.stat("./start_day_2.txt").st_size != 0:        
+            start_day = file.read().strip()
+            # print(start_day)
+            start_day = datetime.strptime(start_day, "%Y-%m-%d %H:%M:%S").date()
+        else:
+            if os.stat(backup_file).st_size != 0: 
+                with open(backup_file, "r") as backup:
+                    start_day = backup.read().strip()
+                    # print(start_day)
+                    start_day = datetime.strptime(start_day, "%Y-%m-%d %H:%M:%S").date()
+            else:
+                start_day = None
+                # print(start_day)
 except FileNotFoundError:
     start_day = None
 
@@ -39,6 +53,8 @@ with open('./dataset/Citi_Bike_trip_data.csv','r') as read_obj:
         # counter += 1
         with open("./start_day_2.txt", "w") as file:
             file.write(f"{datetime_str}")
+        with open(backup_file, "w") as backup:
+            backup.write(f"{datetime_str}")
 
 
 
@@ -62,9 +78,13 @@ with open('./dataset/Citi_Bike_trip_data.csv','r') as read_obj:
             # counter += 1
             with open("./start_day_2.txt", "w") as file:
                 file.write(f"{datetime_str}")
+            with open(backup_file, "w") as backup:
+                backup.write(f"{datetime_str}")
         else:
             with open("./start_day_2.txt", "w") as file:
                 file.write(f"{datetime_str}")
+            with open(backup_file, "w") as backup:
+                backup.write(f"{datetime_str}")
             if datetime_obj.date() >= start_day + timedelta(days=10):
                 producer.flush()
                 break
