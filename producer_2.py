@@ -4,10 +4,10 @@ from csv import DictReader
 from datetime import datetime, timedelta
 import os
 
-bootstrap_servers = ['localhost:9092']
+bootstrap_servers = ['localhost:9092', 'localhost:9093', 'localhost:9094']
 topicname = 'for_mappers_2'
 producer = KafkaProducer(bootstrap_servers = bootstrap_servers)
-producer = KafkaProducer()
+# producer = KafkaProducer()
 
 backup_file = "./start_day_2_backup.txt"
 

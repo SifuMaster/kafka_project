@@ -5,6 +5,9 @@ Kafka project for AUEB MSc Digital Infrastructure Technologies course
 In order to run the project a zookeper/kafka environment must be set up as described here
 https://www.digitalocean.com/community/tutorials/how-to-install-apache-kafka-on-ubuntu-20-04
 
+Multiple brokers can be set up as described here 
+https://www.learnbestcoding.com/post/123/how-to-create-multiple-brokers-in-apache-kafka
+
 A running Minio server is also needed which can be set up as described here 
 https://linuxhint.com/installing_minio_ubuntu/
 
